@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --no-audit
 RUN npm i -g pm2
 COPY . .
 
