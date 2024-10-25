@@ -9,7 +9,7 @@ async function findAcceptLanguage(page) {
     })
 }
 
-function getSource({ url, proxy }) {
+function getSource({url, proxy}) {
     return new Promise(async (resolve, reject) => {
 
         if (!url) return reject('Missing url parameter')
@@ -18,11 +18,13 @@ function getSource({ url, proxy }) {
 
         let isResolved = false
 
-        const { proxyRequest } = await import('puppeteer-proxy')
+        const {proxyRequest} = await import('puppeteer-proxy')
 
         var cl = setTimeout(async () => {
             if (!isResolved) {
-                await context.close()
+                if (!context.isClosed()) {
+                    await context.close()
+                }
                 reject("Timeout Error")
             }
         }, (global.timeOut || 60000))
@@ -41,12 +43,14 @@ function getSource({ url, proxy }) {
                     } else {
                         request.continue()
                     }
-                } catch (e) { }
+                } catch (e) {
+                }
             });
             page.on('response', async (res) => {
                 try {
                     if ([200, 302].includes(res.status()) && [url, url + '/'].includes(res.url())) {
-                        await page.waitForNavigation({ waitUntil: 'load', timeout: 5000 }).catch(() => { });
+                        await page.waitForNavigation({waitUntil: 'load', timeout: 5000}).catch(() => {
+                        });
                         const cookies = await page.cookies()
                         let headers = await res.request().headers()
                         delete headers['content-type']
@@ -54,12 +58,17 @@ function getSource({ url, proxy }) {
                         delete headers['accept']
                         delete headers['content-length']
                         headers["accept-language"] = await findAcceptLanguage(page)
-                        await context.close()
+
+                        if(!context.isClosed()) {
+                            await context.close()
+                        }
+
                         isResolved = true
                         clearInterval(cl)
-                        resolve({ cookies, headers })
+                        resolve({cookies, headers})
                     }
-                } catch (e) { }
+                } catch (e) {
+                }
             })
 
 
@@ -68,7 +77,9 @@ function getSource({ url, proxy }) {
             })
         } catch (e) {
             if (!isResolved) {
-                await context.close()
+                if (!context.isClosed()) {
+                    await context.close();
+                }
                 clearInterval(cl)
                 reject(e.message)
             }
@@ -76,4 +87,5 @@ function getSource({ url, proxy }) {
 
     })
 }
+
 module.exports = getSource
