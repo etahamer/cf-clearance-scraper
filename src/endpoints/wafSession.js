@@ -22,9 +22,7 @@ function getSource({url, proxy}) {
 
         var cl = setTimeout(async () => {
             if (!isResolved) {
-                if (!context.isClosed()) {
-                    await context.close()
-                }
+                await context.close()
                 reject("Timeout Error")
             }
         }, (global.timeOut || 60000))
@@ -59,9 +57,7 @@ function getSource({url, proxy}) {
                         delete headers['content-length']
                         headers["accept-language"] = await findAcceptLanguage(page)
 
-                        if(!context.isClosed()) {
-                            await context.close()
-                        }
+                        await context.close()
 
                         isResolved = true
                         clearInterval(cl)
@@ -77,9 +73,8 @@ function getSource({url, proxy}) {
             })
         } catch (e) {
             if (!isResolved) {
-                if (!context.isClosed()) {
-                    await context.close();
-                }
+                await context.close();
+
                 clearInterval(cl)
                 reject(e.message)
             }
