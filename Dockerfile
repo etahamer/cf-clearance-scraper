@@ -16,7 +16,6 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm update
 RUN npm install
 RUN npm i -g pm2
 COPY . .
