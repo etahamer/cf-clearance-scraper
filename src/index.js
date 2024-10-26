@@ -28,6 +28,7 @@ const wafSession = require('./endpoints/wafSession')
 
 
 app.post('/cf-clearance-scraper', async (req, res) => {
+
     const data = req.body
 
     const check = reqValidate(data)
