@@ -14,10 +14,12 @@ ENV CHROME_BIN=/usr/bin/chromium
 
 WORKDIR /app
 
+RUN npm i -g pm2
+
 COPY package*.json ./
 
 RUN npm ci --no-audit
-RUN npm i -g pm2
+
 COPY . .
 
 EXPOSE 3000
